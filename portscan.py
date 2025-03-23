@@ -2,6 +2,7 @@ import sys
 import socket 
 import re
 import threading
+from datetime import datetime
 
 #check if target ip is in the right IPv4 format
 regex = r"\b((25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\b"
@@ -22,22 +23,32 @@ def scan_port(target_ip, port, showall, results):
 
 #Principal function : using multithread to optimize the search.
 def portscanner(target_ip, port_range, showall):
-    print(f"Scanning target --> {target_ip}")
+    print(f"Scanning target --> {target_ip} on port range {port_range}")
 
     thread_list = []
     results = {}  
 
-    for port in range(port_range[0], port_range[1] + 1):
-        scan = threading.Thread(target=scan_port, args=(target_ip, port, showall, results))
-        thread_list.append(scan)
-        scan.start()
-    
-    for scan in thread_list:
-        scan.join()
-    
-    for port in sorted(results.keys()):
-        print(results[port])
+    try :
+        start_time = datetime.now()
 
+        for port in range(port_range[0], port_range[1] + 1):
+            scan = threading.Thread(target=scan_port, args=(target_ip, port, showall, results))
+            thread_list.append(scan)
+            scan.start()
+        
+        for scan in thread_list:
+            scan.join()
+        
+        end_time = datetime.now()
+
+        
+        for port in sorted(results.keys()):
+            print(results[port])
+
+        print(f"Port scanning ended in {end_time - start_time}.")
+        
+    except Exception as e:
+        print("Something went wrong. Please refer to --help/-h. Error : {e}.")
 try:
     arg1 = args[1]
     if len(args) == 2:
