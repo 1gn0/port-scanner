@@ -66,7 +66,7 @@ try:
         print("Error : invalid target ip. Please use IPv4 format.")
         exit(1)
 
-#optionals arguments gestion
+#optional arguments gestion
     min_presence, max_presence, showall = False, False, False
 
     if len(args) > 5:
