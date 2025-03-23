@@ -9,7 +9,7 @@ This tool is a basic port scanner made for fun using the python library socket a
 
 Usage : 
 
-python portscanner.py target_ip (IPv4 format) (port_min) (port_max) (The last ones are optional. You must specify a min_port for using the port_max option.)
+```python portscanner.py target_ip (IPv4 format) (port_min) (port_max)``` (The last ones are optional. You must specify a min_port to use the port_max option.)
 
 optional arguments : 
 
