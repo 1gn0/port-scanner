@@ -65,8 +65,17 @@ try:
 
         except:
             pass
+
+#show argument place prediction.
+    if min_presence and max_presence: 
+        s_place = 4
+    elif min_presence and not max_presence:
+        s_place = 3
+    else:
+        s_place = 2
+
     try:
-        showarg = args[4]
+        showarg = args[s_place]
         if not showarg == '-s' and not showarg == '--show':
             print("Error : invalid last argument. Please refer to --help/-h.")
         else:
