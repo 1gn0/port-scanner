@@ -102,7 +102,7 @@ try:
 
     port_range = [0 if not min_presence else min_port, 65535 if not max_presence else max_port]
 
-    #execution of our fonction : 
+#execution of our fonction : 
 
     if __name__ == "__main__":
         portscanner(target_ip, port_range, showall)
