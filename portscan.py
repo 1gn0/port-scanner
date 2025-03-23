@@ -11,7 +11,7 @@ def is_valid_ip(ip):
 args = sys.argv
 
 #Principal function used : 
-def portscan(target_ip, port_range):
+def portscan(target_ip, port_range, showall):
     print(f"Scanning target --> {target_ip}")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         # Test connection
@@ -19,14 +19,14 @@ def portscan(target_ip, port_range):
             test = s.connect_ex((target_ip, port))
             if test == 0:
                 print(f'Port {port} is [open]') 
-            else:
+            elif showall:
                 print(f'Port {port} is [close]') 
 
 try:
     arg1 = args[1]
     if len(args) == 2:
         if arg1 == "-h" or arg1 == "--help":
-            print("Help on this tool : Usage : python ./portscan.py target_ip (IPv4 format). optional : port_min port_max (will only scan this range. Unspecified : scans from 0 to 65534.)")
+            print("Help on this tool : Usage : python ./portscan.py target_ip (IPv4 format). optional : port_min port_max (will only scan this range. Unspecified : scans from 0 to 65534.) -s or --show : show all tests.")
             exit(1)
         if not is_valid_ip(arg1):
             print("Error : invalid target ip. Please use IPv4 format.")
@@ -40,9 +40,9 @@ try:
         exit(1)
 
 #optionals arguments gestion
-    min_presence, max_presence = False, False
+    min_presence, max_presence, showall = False, False, False
 
-    if len(args) > 4:
+    if len(args) > 5:
         print("Too much arguments. Please refer to --help or -h.")
     
     try: 
@@ -65,13 +65,22 @@ try:
 
         except:
             pass
+    try:
+        showarg = args[4]
+        if not showarg == '-s' and not showarg == '--show':
+            print("Error : invalid last argument. Please refer to --help/-h.")
+        else:
+            showall = True
+    except:
+        pass
+
 
     port_range = [0 if not min_presence else min_port, 65534 if not max_presence else max_port]
 
     #execution of our fonction : 
 
     if __name__ == "__main__":
-        portscan(target_ip, port_range)
+        portscan(target_ip, port_range, showall)
 
 except Exception as e:
     print(f"Invalids arguments. Please refer to --help or -h. Error : {e}")
