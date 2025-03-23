@@ -120,3 +120,9 @@ try:
 
 except Exception as e:
     print(f"Invalids arguments. Please refer to --help or -h. Error : {e}")
+
+
+#To Do : 
+#Remove the -s arg : was only here for test purpose.
+#Add banner grabbing : display informations about the service running on a port. 
+#Add a function to use a list of ip instead of only one each time.
