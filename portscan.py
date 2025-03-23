@@ -12,8 +12,15 @@ args = sys.argv
 
 #Principal function used : 
 def portscan(target_ip, port_range):
-    pass
-
+    print(f"Scanning target --> {target_ip}")
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        # Test connection
+        for port in range(port_range[0], port_range[1]+1):
+            test = s.connect_ex((target_ip, port))
+            if test == 0:
+                print(f'Port {port} is [open]') 
+            else:
+                print(f'Port {port} is [close]') 
 
 try:
     arg1 = args[1]
