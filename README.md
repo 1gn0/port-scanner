@@ -19,7 +19,8 @@ optional arguments :
 -s (--show) : 
   Show all ports tested and connection state.
 
+Please report any bugs to discord user **1gn0**.
 
-  Have fun !
+Have fun !
 
-  1gn0, french student
+1gn0, french student
