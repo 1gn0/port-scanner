@@ -17,9 +17,9 @@ def scan_port(target_ip, port, showall, results):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         test = s.connect_ex((target_ip, port))
         if test == 0:
-            results[port] = f'Port {port} is [open]'
+            results[port] = f'Port {port} is \033[32m[open]\033[0m'
         elif showall:
-            results[port] = f'Port {port} is [close]'
+            results[port] = f'Port {port} is \033[31m[close]\033[0m'
 
 #Principal function : using multithread to optimize the search.
 def portscanner(target_ip, port_range, showall):
@@ -46,7 +46,7 @@ def portscanner(target_ip, port_range, showall):
             print(results[port])
 
         print(f"Port scanning ended in {end_time - start_time}.")
-        
+
     except Exception as e:
         print("Something went wrong. Please refer to --help/-h. Error : {e}.")
 try:
