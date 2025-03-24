@@ -51,8 +51,24 @@ def scan_port(target_ip, port, display_banner, results, banners):
                 except Exception as e:
                     banners[port] = f"On port {port}: Error retrieving banner - {e}"
             if display_banner and not port in usual_ports:
-                banners[port] = f"Unable to get banner on port {port}."
+                try :
+                    banner= s.recv(1024).decode(errors="ignore").strip()
 
+                    str_banner = f"On port {port} :\n"
+                         
+                    if "{" in banner and "}" in banner:
+                        import json
+                        try:
+                            banner_dict = json.loads(banner) 
+                            for key, value in banner_dict.items():
+                                str_banner += f"{key} : \033[31m{value}\033[0m\n"
+                        except json.JSONDecodeError:
+                            str_banner += f"\033[31m{banner}\033[0m\n"
+                    else:
+                        str_banner += f"\033[31m{banner}\033[0m\n"
+                    banners[port] = str_banner
+                except Exception as e:
+                    banners[port] = f"On port {port}: Error retrieving banner - {e}"
 
 #Principal function : using multithread to optimize the search.
 def portscanner(target_ip, port_range, display_banner):
