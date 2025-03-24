@@ -3,7 +3,7 @@ import socket
 import re
 import threading
 from datetime import datetime
-
+import subprocess
 
 #check if target ip is in the right IPv4 format
 regex = r"\b((25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9][0-9]?)\b"
@@ -13,11 +13,18 @@ def is_valid_ip(ip):
 
 args = sys.argv
 
+def get_process_netstat(ip, port):
+    command = f'netstat -ano | findstr "{ip}:{port}"'
+    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    return result.stdout if result.stdout else f"No process found on {ip}:{port}"
+
+
 #Using sockets : 
 
 def scan_port(target_ip, port, display_banner, results, banners):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.settimeout(5)  # Timeout pour éviter de bloquer
+
+        s.settimeout(5)  # Timeout 
         test = s.connect_ex((target_ip, port))
 
         if test == 0:
@@ -25,29 +32,31 @@ def scan_port(target_ip, port, display_banner, results, banners):
 
             if display_banner:
                 try:
-                    banner = s.recv(1024).decode().strip()
+                    proc = get_process_netstat(target_ip, port)
+                    banner = s.recv(1024).decode(errors="ignore").strip()
 
                     if banner:
                         str_banner = f"\nOn port {port} :\n"
                         
-                        # Si la réponse est un JSON ou ressemble à un dictionnaire
                         if "{" in banner and "}" in banner:
                             import json
                             try:
-                                banner_dict = json.loads(banner)  # Convertir en dict
+                                banner_dict = json.loads(banner) 
                                 for key, value in banner_dict.items():
                                     str_banner += f"{key} : \033[31m{value}\033[0m\n"
+                                str_banner += proc + "\n"
+
                             except json.JSONDecodeError:
                                 str_banner += f"\033[31m{banner}\033[0m\n"
                         else:
-                            str_banner += f"\033[31m{banner}\033[0m\n"
+                            str_banner += f"\033[31m{banner}\033[0m\n" + proc + "\n"
 
                         banners[port] = str_banner
                     else:
                         banners[port] = f"On port {port} : Unable to retrieve banner"
 
                 except Exception as e:
-                    banners[port] = f"On port {port} : Error retrieving banner - {e}"
+                    banners[port] = f"On port {port} : Error retrieving banner - {e}\n" + proc + "\n"
 
 
         
