@@ -13,50 +13,49 @@ def is_valid_ip(ip):
 
 args = sys.argv
 
-def get_process_netstat(ip, port):
-    command = f'netstat -ano | findstr "{ip}:{port}"'
-    result = subprocess.run(command, shell=True, capture_output=True, text=True)
-    return result.stdout if result.stdout else f"No process found on {ip}:{port}"
+usual_ports = {
+    21: b'USER anonymous\r\n',  # FTP
+    22: b'\n',  # SSH 
+    23: b'\n',  # Telnet 
+    25: b'EHLO test\r\n',  # SMTP
+    80: b'GET / HTTP/1.1\r\nHost: target.com\r\n\r\n',  # HTTP
+    110: b'USER test\r\n',  # POP3
+    143: b'LOGIN test test\r\n',  # IMAP
+    3306: b'\n',  # MySQL 
+    3389: b'\n',  # RDP 
+    6379: b'INFO\r\n',  # Redis
+    8080: b'GET / HTTP/1.1\r\nHost: target.com\r\n\r\n',  # HTTP Proxy / Tomcat
+    27017: b'\n',  # MongoDB 
+}
 
 
 #Using sockets : 
 
 def scan_port(target_ip, port, display_banner, results, banners):
+
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
         s.settimeout(5)  # Timeout 
         test = s.connect_ex((target_ip, port))
 
         if test == 0:
+
             results[port] = f'Port {port} is \033[32m[open]\033[0m'
 
-            if display_banner:
+            if display_banner and port in usual_ports.keys():
                 try:
-                    proc = get_process_netstat(target_ip, port)
-                    banner = s.recv(1024).decode(errors="ignore").strip()
-
-                    if banner:
-                        str_banner = f"\nOn port {port} :\n"
-                        
-                        if "{" in banner and "}" in banner:
-                            import json
-                            try:
-                                banner_dict = json.loads(banner) 
-                                for key, value in banner_dict.items():
-                                    str_banner += f"{key} : \033[31m{value}\033[0m\n"
-                                str_banner += proc + "\n"
-
-                            except json.JSONDecodeError:
-                                str_banner += f"\033[31m{banner}\033[0m\n"
-                        else:
-                            str_banner += f"\033[31m{banner}\033[0m\n" + proc + "\n"
-
-                        banners[port] = str_banner
-                    else:
-                        banners[port] = f"On port {port} : Unable to retrieve banner"
-
+                    s.send(usual_ports[port])  
+                    try:
+                        banner = s.recv(1024).decode().strip()  
+                    except UnicodeDecodeError:
+                        banner = s.recv(1024).hex()  
+                    
+                    banners[port] = f"On port {port}:\n{banner}\n"
+                
                 except Exception as e:
-                    banners[port] = f"On port {port} : Error retrieving banner - {e}\n" + proc + "\n"
+                    banners[port] = f"On port {port}: Error retrieving banner - {e}"
+
+
 
 
         
@@ -165,6 +164,4 @@ except Exception as e:
 
 
 #To Do : 
-#Remove the -s arg : was only here for test purpose.
-#Add banner grabbing : display informations about the service running on a port. 
 #Add a function to use a list of ip instead of only one each time.

@@ -1,9 +1,3 @@
-⚠ Disclaimer
-
-This port scanner is intended for educational and security research purposes only. You must have explicit authorization before scanning any network or system that you do not own. 
-Unauthorized port scanning may be illegal and could violate laws, terms of service, or organizational policies.
-
-The author is not responsible for any misuse, legal consequences, or damages caused by using this tool. Use it ethically and responsibly.
 
 This tool is a basic port scanner made for fun using the python library socket and multithreading. On my computer, it takes around 25s to scan all ports. 
 
