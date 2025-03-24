@@ -28,37 +28,31 @@ usual_ports = {
     27017: b'\n',  # MongoDB 
 }
 
-
 #Using sockets : 
 
 def scan_port(target_ip, port, display_banner, results, banners):
-
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-
-        s.settimeout(5)  # Timeout 
+        s.settimeout(5)
         test = s.connect_ex((target_ip, port))
 
         if test == 0:
-
             results[port] = f'Port {port} is \033[32m[open]\033[0m'
 
-            if display_banner and port in usual_ports.keys():
+            if display_banner and port in usual_ports:
                 try:
-                    s.send(usual_ports[port])  
+                    s.send(usual_ports[port])
                     try:
-                        banner = s.recv(1024).decode().strip()  
+                        banner = s.recv(1024).decode().strip()
                     except UnicodeDecodeError:
-                        banner = s.recv(1024).hex()  
+                        banner = s.recv(1024).hex()
                     
-                    banners[port] = f"On port {port}:\n{banner}\n"
+                    banners[port] = f"On port {port}:\n{banner}"
                 
                 except Exception as e:
                     banners[port] = f"On port {port}: Error retrieving banner - {e}"
+            if display_banner and not port in usual_ports:
+                banners[port] = f"Unable to get banner on port {port}."
 
-
-
-
-        
 
 #Principal function : using multithread to optimize the search.
 def portscanner(target_ip, port_range, display_banner):
