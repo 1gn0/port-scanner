@@ -94,7 +94,12 @@ def portscanner(target_ip, port_range, display_banner):
         
         for port in sorted(results.keys()):
             print(results[port])
-            print(banners[port])
+            if port==80:
+                filtered_lines = [line for line in banners[port].split("\n") if line.startswith(("Server:", "Last-Modified:"))]
+                for line in filtered_lines:
+                    print(line)
+            else:
+                print(banners)
 
         print(f"Port scanning ended in {end_time - start_time}.")
 
