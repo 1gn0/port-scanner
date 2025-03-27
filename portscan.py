@@ -66,7 +66,9 @@ def scan_port(target_ip, port, display_banner, results, banners):
                             str_banner += f"\033[31m{banner}\033[0m\n"
                     else:
                         str_banner += f"\033[31m{banner}\033[0m\n"
-                    banners[port] = str_banner
+                    banners[port] = "\n" + str_banner
+                except TimeoutError:
+                    banners[port] = ""
                 except Exception as e:
                     banners[port] = f"On port {port}: Error retrieving banner - {e}"
 
@@ -99,7 +101,7 @@ def portscanner(target_ip, port_range, display_banner):
                 for line in filtered_lines:
                     print(line)
             else:
-                print(banners)
+                print(banners[port])
 
         print(f"Port scanning ended in {end_time - start_time}.")
 
