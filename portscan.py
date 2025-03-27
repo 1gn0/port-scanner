@@ -36,7 +36,7 @@ def scan_port(target_ip, port, display_banner, results, banners):
         test = s.connect_ex((target_ip, port))
 
         if test == 0:
-            results[port] = f'Port {port} is \033[32m[open]\033[0m'
+            results[port] = f'\nPort {port} is \033[32m[open]\033[0m'
 
             if display_banner and port in usual_ports:
                 try:
@@ -46,7 +46,7 @@ def scan_port(target_ip, port, display_banner, results, banners):
                     except UnicodeDecodeError:
                         banner = s.recv(1024).hex()
                     
-                    banners[port] = f"On port {port}:\n{banner}"
+                    banners[port] = f"\nOn port {port}:\n{banner}"
                 
                 except Exception as e:
                     banners[port] = f"On port {port}: Error retrieving banner - {e}"
@@ -54,7 +54,7 @@ def scan_port(target_ip, port, display_banner, results, banners):
                 try :
                     banner= s.recv(1024).decode(errors="ignore").strip()
 
-                    str_banner = f"On port {port} :\n"
+                    str_banner = f"\nOn port {port} :\n"
                          
                     if "{" in banner and "}" in banner:
                         import json
@@ -96,14 +96,16 @@ def portscanner(target_ip, port_range, display_banner):
         
         for port in sorted(results.keys()):
             print(results[port])
+
+#usual ports printer :
             if port==80:
-                filtered_lines = [line for line in banners[port].split("\n") if line.startswith(("Server:", "Last-Modified:"))]
+                filtered_lines = ["\nOn port 80 : "] + [line for line in banners[port].split("\n") if line.startswith(("Server:", "Last-Modified:"))]
                 for line in filtered_lines:
                     print(line)
             else:
                 print(banners[port])
 
-        print(f"Port scanning ended in {end_time - start_time}.")
+        print(f"\nPort scanning ended in {end_time - start_time}.")
 
     except Exception as e:
         print(f"Something went wrong. Please refer to --help/-h. Error : {e}.")
