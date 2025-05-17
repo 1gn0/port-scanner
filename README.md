@@ -13,8 +13,6 @@ optional arguments :
 -s (--show) : 
   Show all ports tested and connection state.
 
-Please report any bugs to discord user **1gn0**.
+You can modify and use this code in his totality but if you do, I would be happy to know about it !
+contact : discord @1gn0
 
-Have fun !
-
-1gn0, french student
